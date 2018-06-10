@@ -30,6 +30,9 @@ class Ranks(enum.Enum):
 
 class Deck():
     deck = []
+    dealer_hand = []
+    player_one_hand = []
+
     def __init__(self):
         # deck = []
         cards = {}
@@ -59,6 +62,23 @@ class Deck():
     def shuffle_deck(self):
         for x in range(3):
             shuffle(self.deck)
+
+    # Draw method which is used to remove two cards for each player
+    # Number of players is so we can get the correct number of cards for all of players
+    # Draw one card for each player, per iteration, until each player has received a card
+    # This goes counter clockwise, starting with the dealer, and then proceeds from there
+    def create_starting_hands(self, num_players):
+        self.dealer_hand.append(self.deck.pop())
+        self.player_one_hand.append(self.deck.pop())
+        self.dealer_hand.append((self.deck.pop()))
+        self.player_one_hand.append(self.deck.pop())
+
+    def show_hand(self, player_name='player_one', dealer=False):
+        if player_name == 'player_one' and dealer == True:
+            print("\nPlayer one: %s" % (self.player_one_hand))
+            print("Dealer: %s " % (self.dealer_hand))
+        elif player_name == 'player_one' and dealer == False:
+            print("\nPlayer one: %s" % (self.player_one_hand))
 
 def make_deck():
     deck = Deck()
