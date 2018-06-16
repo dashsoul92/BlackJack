@@ -7,5 +7,7 @@ bj_deck.shuffle_deck()
 bj_deck.show_deck()
 
 # Create dealer and player one's hands
-bj_deck.create_starting_hands(1)
-bj_deck.show_hand(dealer=True)
+bj_deck.create_starting_hands()
+bj_deck.draw_card(player=True)
+bj_deck.draw_card(dealer=True)
+bj_deck.show_hand(player=True, dealer=True)
