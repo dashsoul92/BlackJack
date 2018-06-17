@@ -5,12 +5,14 @@
 import enum
 from random import shuffle
 
+
 class Suites(enum.Enum):
     __ordering__ = "CLUBS DIAMONDS HEARTS SPADES"
     CLUBS = 'clubs'
     DIAMONDS = 'diamonds'
     HEARTS = 'hearts'
     SPADES = 'spades'
+
 
 class Ranks(enum.Enum):
     __ordering__ = "ACE TWO THREE FOUR FIVE SIX SEVEN EIGHT NINE TEN JACK QUEEN KING"
@@ -28,7 +30,8 @@ class Ranks(enum.Enum):
     QUEEN = 'queen'
     KING = 'king'
 
-class Deck():
+
+class Deck:
     deck = []
     dealer_hand = []
     player_one_hand = []
@@ -69,7 +72,7 @@ class Deck():
     # This goes counter clockwise, starting with the dealer, and then proceeds from there
     def create_starting_hands(self):
         self.draw_card(player=True, dealer=True)
-        self.draw_card(player=True, dealer=True) 
+        self.draw_card(player=True, dealer=True)
 
     def show_hand(self, player=False, dealer=False):
         if player == True and dealer == True:
