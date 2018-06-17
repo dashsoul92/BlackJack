@@ -8,6 +8,10 @@ bj_deck.show_deck()
 
 # Create dealer and player one's hands
 bj_deck.create_starting_hands()
+
+# Draw cards for players
 bj_deck.draw_card(player=True)
 bj_deck.draw_card(dealer=True)
+
+# Show hands
 bj_deck.show_hand(player=True, dealer=True)

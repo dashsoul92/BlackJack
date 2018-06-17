@@ -69,7 +69,7 @@ class Deck():
     # This goes counter clockwise, starting with the dealer, and then proceeds from there
     def create_starting_hands(self):
         self.draw_card(player=True, dealer=True)
-        self.draw_card(player=True, dealer=True)
+        self.draw_card(player=True, dealer=True) 
 
     def show_hand(self, player=False, dealer=False):
         if player == True and dealer == True:
