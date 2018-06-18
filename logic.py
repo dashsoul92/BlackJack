@@ -13,11 +13,14 @@ class Logic:
 
     # Method used to get all of the players scores
     def get_scores(self):
-        print("\nPlayer one's score is: " + str(self.__p1_score__))
         for card in self.deck.player_one_hand:
-            # self.__p1_score__ += int(card[1][1])
-            print(card)
-        print("\nThe dealer's score is: " + str(self.__dealer_score__))
+            self.__p1_score__ += int(card[1])
+            # print(card)
+        print("\nThe player's score is: " + str(self.__p1_score__))
+        for card in self.deck.dealer_hand:
+            self.__dealer_score__ += int(card[1])
+            # print(card)
+        print("The dealer's score is: " + str(self.__dealer_score__))
         return self.__p1_score__, self.__dealer_score__
 
 # A method used to create logic object
