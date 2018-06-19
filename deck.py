@@ -5,12 +5,14 @@
 import enum
 from random import shuffle
 
+
 class Suites(enum.Enum):
     __ordering__ = "CLUBS DIAMONDS HEARTS SPADES"
     CLUBS = 'clubs'
     DIAMONDS = 'diamonds'
     HEARTS = 'hearts'
     SPADES = 'spades'
+
 
 class Ranks(enum.Enum):
     __ordering__ = "ACE TWO THREE FOUR FIVE SIX SEVEN EIGHT NINE TEN JACK QUEEN KING"
@@ -28,8 +30,12 @@ class Ranks(enum.Enum):
     QUEEN = 'queen'
     KING = 'king'
 
-class Deck():
+
+class Deck:
     deck = []
+    dealer_hand = []
+    player_one_hand = []
+
     def __init__(self):
         # deck = []
         cards = {}
@@ -59,6 +65,32 @@ class Deck():
     def shuffle_deck(self):
         for x in range(3):
             shuffle(self.deck)
+
+    # Draw method which is used to remove two cards for each player
+    # Number of players is so we can get the correct number of cards for all of players
+    # Draw one card for each player, per iteration, until each player has received a card
+    # This goes counter clockwise, starting with the dealer, and then proceeds from there
+    def create_starting_hands(self):
+        self.draw_card(player=True, dealer=True)
+        self.draw_card(player=True, dealer=True)
+
+    def show_hand(self, player=False, dealer=False):
+        if player == True and dealer == True:
+            print("\nPlayer one: %s" % self.player_one_hand)
+            print("Dealer: %s " % self.dealer_hand)
+        elif player == True and dealer == False:
+            print("\nPlayer one: %s" % self.player_one_hand)
+        elif player == False and dealer == True:
+            print("Dealer: %s " % self.dealer_hand)
+
+    def draw_card(self, player=False, dealer=False):
+        if (player == True) and (dealer == True):
+            self.dealer_hand.append((self.deck.pop()))
+            self.player_one_hand.append(self.deck.pop())
+        elif (player == True) and (dealer == False):
+            self.player_one_hand.append((self.deck.pop()))
+        elif (player == False) and (dealer == True):
+            self.dealer_hand.append((self.deck.pop()))
 
 def make_deck():
     deck = Deck()
