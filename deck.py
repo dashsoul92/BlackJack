@@ -33,8 +33,10 @@ class Ranks(enum.Enum):
 
 class Deck:
     deck = []
+    drawn_cards = []
     dealer_hand = []
     player_one_hand = []
+    card_count = 0
 
     def __init__(self):
         # deck = []
@@ -87,10 +89,17 @@ class Deck:
         if (player == True) and (dealer == True):
             self.dealer_hand.append((self.deck.pop()))
             self.player_one_hand.append(self.deck.pop())
+            self.card_count += 2
+            print("hello")
         elif (player == True) and (dealer == False):
             self.player_one_hand.append((self.deck.pop()))
+            self.card_count += 1
         elif (player == False) and (dealer == True):
             self.dealer_hand.append((self.deck.pop()))
+            self.card_count += 1
+
+    def get_card_count(self):
+        print("The card count is currently: %d" % self.card_count)
 
 def make_deck():
     deck = Deck()
