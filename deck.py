@@ -53,19 +53,15 @@ class Deck:
                 else:
                     value += 1
         for key, value in cards.items():
-            if value == 1:
-                temp = [key, [value, 11]]
-                self.deck.append(temp)
-            else:
-                temp = [key, value]
-                self.deck.append(temp)
+            temp = [key, value]
+            self.deck.append(temp)
 
     def show_deck(self):
         print(self.deck)
         print(len(self.deck), "cards in deck")
 
     def shuffle_deck(self):
-        for x in range(3):
+        for _ in range(3):
             shuffle(self.deck)
 
     # Draw method which is used to remove two cards for each player
@@ -86,7 +82,7 @@ class Deck:
             print("Dealer: %s " % self.dealer_hand)
 
     def draw_card(self, player=False, dealer=False):
-        if (player == True) and (dealer == True):
+        if player == True and dealer == True:
             self.dealer_hand.append((self.deck.pop()))
             self.player_one_hand.append(self.deck.pop())
             self.card_count += 2
@@ -94,12 +90,16 @@ class Deck:
         elif (player == True) and (dealer == False):
             self.player_one_hand.append((self.deck.pop()))
             self.card_count += 1
-        elif (player == False) and (dealer == True):
+        elif player == False and dealer == True:
             self.dealer_hand.append((self.deck.pop()))
             self.card_count += 1
 
     def get_card_count(self):
         print("The card count is currently: %d" % self.card_count)
+        if self.card_count < 48:
+            print("Draw card")
+        else:
+            print("Deck needs to be recreated and shuffled.")
 
 def make_deck():
     deck = Deck()
