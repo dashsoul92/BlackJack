@@ -19,13 +19,14 @@ while game:
         state = 1
     elif state == 1:
         bj_deck.show_hand(player=True, dealer=True)
-        game_logic.get_score(player=True, dealer=True)
+        busted, player_score = game_logic.get_score(player=True)
         player_response = input("Type 'h' to hit or 's' to stay: ")
 
         if player_response == 'h':
             print("hit")
+            bj_deck.show_hand(player=True, dealer=True)
             bj_deck.draw_card(player=True)
-            busted = game_logic.get_score(player=True)
+            busted, player_score = game_logic.get_score(player=True)
             if busted == True:
                 print("You busted! Dealer wins.")
                 game = False
@@ -36,14 +37,31 @@ while game:
             game_logic.get_score(player=True, dealer=False)
             state = 2
     elif state == 2:
-        # TODO Work on dealer logic
-        # if game_logic.get_score(dealer=True) <= 16:
-        #     print("Hit")
-        #     bj_deck.draw_card(dealer=True)
-        #     busted = game_logic.get_score(dealer=True)
-        #     if busted == True:
-        #         print("The Dealer busted! You win.")
-        #         game = False
-        # else:
-        #     continue
+        busted = False
+        busted, dealer_score = game_logic.get_score(dealer=True)
+        if dealer_score <= 16:
+            print("Hit")
+            bj_deck.draw_card(dealer=True)
+            busted, dealer_score = game_logic.get_score(dealer=True)
+            if busted == True:
+                print("The Dealer's score was: %d" % dealer_score)
+                print("The Dealer busted! You win.")
+                game = False
+        else:
+            bj_deck.draw_card()
+            player_busted, dealer_busted, player_score, dealer_score = game_logic.get_score(player=True, dealer=True)
+            if player_busted == True:
+                print("The dealer wins")
+                game = False
+            elif dealer_busted == True:
+                print("The dealer wins!")
+            elif player_busted != True and dealer_busted != True and player_score > dealer_score:
+                print("The player won!")
+                game = False
+            elif player_busted != True and dealer_busted != True and player_score < dealer_score:
+                print("The dealer won!")
+                game = False
+            elif player_busted != True and dealer_busted != True and player_score == dealer_score:
+                print("It was a draw!")
+                game = False
         continue
