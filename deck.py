@@ -86,13 +86,15 @@ class Deck:
             self.dealer_hand.append((self.deck.pop()))
             self.player_one_hand.append(self.deck.pop())
             self.card_count += 2
-            print("hello")
-        elif (player == True) and (dealer == False):
+            return
+        elif player == True and dealer == False:
             self.player_one_hand.append((self.deck.pop()))
             self.card_count += 1
+            return
         elif player == False and dealer == True:
             self.dealer_hand.append((self.deck.pop()))
             self.card_count += 1
+            return
 
     def get_card_count(self):
         print("The card count is currently: %d" % self.card_count)

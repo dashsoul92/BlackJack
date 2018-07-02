@@ -15,47 +15,38 @@ class Logic:
     def get_score(self, player=False, dealer=False):
         busted = False
         if (player == True) and (dealer == True):
+            self.__p1_score__ = 0
             for card in self.deck.player_one_hand:
-                if self.__p1_score__ + int(card[1]) > 21:
-                    print("Player one busted!")
-                    self.__p1_score__ += int(card[1])
-                    busted = True
-                    return busted
-                else:
-                    self.__p1_score__ += int(card[1])
-                # print(card)
+                self.__p1_score__ += int(card[1])
             print("\nThe player's score is: " + str(self.__p1_score__))
 
+            self.__dealer_score__ = 0
             for card in self.deck.dealer_hand:
-                if self.__dealer_score__ + int(card[1]) > 21:
-                    print("The dealer busted!")
-                    self.__dealer_score__ += int(card[1])
-                else:
-                    self.__dealer_score__ += int(card[1])
-                # print(card)
-            print("The dealer's score is: " + str(self.__dealer_score__))
-            return self.__p1_score__, self.__dealer_score__
+                self.__dealer_score__ += int(card[1])
+            return busted
         elif (player == True) and (dealer == False):
+            self.__p1_score__ = 0
             for card in self.deck.player_one_hand:
                 if self.__p1_score__ + int(card[1]) > 21:
-                    print("Player one busted!")
                     self.__p1_score__ += int(card[1])
+                    print("\nYour score was: " + str(self.__p1_score__))
                     busted = True
                     return busted
                 else:
                     self.__p1_score__ += int(card[1])
-                # print(card)
-            print("\nThe player's score is: " + str(self.__p1_score__))
+            print("\nYour score is: " + str(self.__p1_score__))
+            return busted
         elif (player == False) and (dealer == True):
             for card in self.deck.dealer_hand:
                 if self.__dealer_score__ + int(card[1]) > 21:
-                    print("The dealer busted!")
-                    self.__dealer_score__ += int(card[1])
+                    self.__dealer_score__ + int(card[1])
+                    print("\nThe Dealer's score is: " + str(self.__p1_score__))
+                    busted = True
+                    return busted
                 else:
                     self.__dealer_score__ += int(card[1])
-                # print(card)
-            print("The dealer's score is: " + str(self.__dealer_score__))
-            return self.__dealer_score__
+                    print("\nThe Dealer's score is: " + str(self.__p1_score__))
+            return busted
 
 # A method used to create logic object
 def create_logic(deck):
