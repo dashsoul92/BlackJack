@@ -33,8 +33,10 @@ class Ranks(enum.Enum):
 
 class Deck:
     deck = []
+    drawn_cards = []
     dealer_hand = []
     player_one_hand = []
+    card_count = 0
 
     def __init__(self):
         # deck = []
@@ -51,19 +53,15 @@ class Deck:
                 else:
                     value += 1
         for key, value in cards.items():
-            if value == 1:
-                temp = [key, [value, 11]]
-                self.deck.append(temp)
-            else:
-                temp = [key, value]
-                self.deck.append(temp)
+            temp = [key, value]
+            self.deck.append(temp)
 
     def show_deck(self):
         print(self.deck)
         print(len(self.deck), "cards in deck")
 
     def shuffle_deck(self):
-        for x in range(3):
+        for _ in range(3):
             shuffle(self.deck)
 
     # Draw method which is used to remove two cards for each player
@@ -76,21 +74,38 @@ class Deck:
 
     def show_hand(self, player=False, dealer=False):
         if player == True and dealer == True:
-            print("\nPlayer one: %s" % self.player_one_hand)
             print("Dealer: %s " % self.dealer_hand)
+            print("Player one: %s" % self.player_one_hand)
         elif player == True and dealer == False:
-            print("\nPlayer one: %s" % self.player_one_hand)
+            print("Player one: %s" % self.player_one_hand)
         elif player == False and dealer == True:
             print("Dealer: %s " % self.dealer_hand)
 
     def draw_card(self, player=False, dealer=False):
-        if (player == True) and (dealer == True):
-            self.dealer_hand.append((self.deck.pop()))
-            self.player_one_hand.append(self.deck.pop())
-        elif (player == True) and (dealer == False):
-            self.player_one_hand.append((self.deck.pop()))
-        elif (player == False) and (dealer == True):
-            self.dealer_hand.append((self.deck.pop()))
+        if player == True and dealer == True:
+            dealer_card = self.deck.pop()
+            player_card = self.deck.pop()
+            self.dealer_hand.append(dealer_card)
+            self.player_one_hand.append(player_card)
+            self.card_count += 2
+            return dealer_card, player_card
+        elif player == True and dealer == False:
+            player_card = self.deck.pop()
+            self.player_one_hand.append(player_card)
+            self.card_count += 1
+            return player_card
+        elif player == False and dealer == True:
+            dealer_card = self.deck.pop()
+            self.dealer_hand.append(dealer_card)
+            self.card_count += 1
+            return dealer_card
+
+    def get_card_count(self):
+        print("The card count is currently: %d" % self.card_count)
+        if self.card_count < 48:
+            print("Draw card")
+        else:
+            print("Deck needs to be recreated and shuffled.")
 
 def make_deck():
     deck = Deck()
