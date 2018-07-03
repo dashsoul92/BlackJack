@@ -74,27 +74,31 @@ class Deck:
 
     def show_hand(self, player=False, dealer=False):
         if player == True and dealer == True:
-            print("\nPlayer one: %s" % self.player_one_hand)
             print("Dealer: %s " % self.dealer_hand)
+            print("Player one: %s" % self.player_one_hand)
         elif player == True and dealer == False:
-            print("\nPlayer one: %s" % self.player_one_hand)
+            print("Player one: %s" % self.player_one_hand)
         elif player == False and dealer == True:
             print("Dealer: %s " % self.dealer_hand)
 
     def draw_card(self, player=False, dealer=False):
         if player == True and dealer == True:
-            self.dealer_hand.append((self.deck.pop()))
-            self.player_one_hand.append(self.deck.pop())
+            dealer_card = self.deck.pop()
+            player_card = self.deck.pop()
+            self.dealer_hand.append(dealer_card)
+            self.player_one_hand.append(player_card)
             self.card_count += 2
-            return
+            return dealer_card, player_card
         elif player == True and dealer == False:
-            self.player_one_hand.append((self.deck.pop()))
+            player_card = self.deck.pop()
+            self.player_one_hand.append(player_card)
             self.card_count += 1
-            return
+            return player_card
         elif player == False and dealer == True:
-            self.dealer_hand.append((self.deck.pop()))
+            dealer_card = self.deck.pop()
+            self.dealer_hand.append(dealer_card)
             self.card_count += 1
-            return
+            return dealer_card
 
     def get_card_count(self):
         print("The card count is currently: %d" % self.card_count)
