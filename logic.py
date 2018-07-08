@@ -22,23 +22,23 @@ class Logic:
         return self.__dealer_score__, self.__p1_score__
 
     # Method used to evaluate the scores
-    def check_score(self, dealer=False, player=False):
+    def check_score(self, dealer=False, player=False, print_score=False):
         self.set_score()
-        if dealer == True and player == True:
+        if dealer == True and player == True and print_score == True:
             print(f"\nThe dealer's score is: {self.__dealer_score__}")
             print(f"The player's score is {self.__p1_score__}")
             return self.__dealer_score__, self.__p1_score__
+        elif dealer == True and player == True and print_score == False:
+            return self.__dealer_score__, self.__p1_score__
         elif dealer == True and player == False:
-            # print(f"The dealer's score is: {self.__dealer_score__}")
             return self.__dealer_score__
         elif dealer == False and player == True:
-            # print(f"The player's score is {self.__p1_score__}")
             return self.__p1_score__
         else:
             return
 
 
-# A method used to create logic object
+# A method used to create the logic object
 def create_logic(deck):
     logic = Logic(deck)
     return logic
