@@ -14,16 +14,20 @@ bj_deck.shuffle_deck()
 game_logic = logic.create_logic(bj_deck)
 
 # Beginning the game
-game_number = 0
+game_number = 1
 game = True
 
 while game:
-    if game_number > 0:
+    if game_number > 1:
         print(f"\nGame number: {game_number}")
         play_again = input("type 'y' to continue or 'n' to end the game: ")
         if play_again == 'y':
             game_number = game_logic.play_round(deck=bj_deck, logic=game_logic, game_number=game_number)
+            print(f"The Graveyard consists of {bj_deck.graveyard}")
+            print(f"The length of the dealer's deck is: {len(bj_deck.dealer_hand)}"
+                  f"The length of the player's deck is: {len(bj_deck.player_one_hand)}")
         elif play_again == 'n':
             game = False
     else:
         game_number = game_logic.play_round(deck=bj_deck, logic=game_logic, game_number=game_number)
+        print(f"The Graveyard consists of {bj_deck.graveyard}")
