@@ -1,7 +1,7 @@
 import deck
 import logic
 
-# TODO Create the logic for the dealer. Hitting and staying
+# TODO Figure out the logic to dump the player and dealer's hands from the previous game into the graveyard
 # TODO Handle multiple rounds rather than just the one round
 # TODO Handle placing bets
 # TODO Handle keeping track of bank
@@ -14,70 +14,20 @@ bj_deck.shuffle_deck()
 game_logic = logic.create_logic(bj_deck)
 
 # Beginning the game
-state = 0
+game_number = 1
 game = True
+
 while game:
-    # Game setup
-    if state == 0:
-        # The beginning of a round
-        # Create dealer and player hands
-        bj_deck.create_starting_hands()
-        state = 1
-    # Game controller for hitting and standing as the player
-    elif state == 1:
-        dealer_score, player_score = game_logic.check_score(dealer=True, player=True, print_score=False)
-        if player_score < 21:
-            game_logic.check_score(dealer=True, player=True, print_score=True)
-            player_response = input("Type 'h' to hit or 's' to stand: ")
-            # Hitting
-            if player_response == 'h':
-                player_card = bj_deck.draw_card(player=True)
-                if player_score > 21:
-                    print(f"\nThe player busted with a score of: {player_score}. "
-                          f"The dealer won with a score of: {dealer_score}")
-                    game = False
-                elif player_score < 21:
-                    continue
-                else:
-                    print(f"\nThe player has blackjack!")
-                    state = 2
-            # Standing
-            elif player_response == 's':
-                state = 2
-        else:
-            game_logic.check_score(dealer=True, player=True, print_score=False)
-            print(f"\nThe player busted with a score of: {player_score}."
-                  f"\nThe dealer won with a score of: {dealer_score}.")
+    if game_number > 1:
+        print(f"\nGame number: {game_number}")
+        play_again = input("type 'y' to continue or 'n' to end the game: ")
+        if play_again == 'y':
+            game_number = game_logic.play_round(deck=bj_deck, logic=game_logic, game_number=game_number)
+            print(f"The Graveyard consists of {bj_deck.graveyard}")
+            print(f"The length of the dealer's deck is: {len(bj_deck.dealer_hand)}"
+                  f"The length of the player's deck is: {len(bj_deck.player_one_hand)}")
+        elif play_again == 'n':
             game = False
-    # Dealer logic for hitting and standing
-    # If the dealer's hand is 17 or higher then, the dealer will always stand
-    # If the dealer's hand is less than 17 then, the dealer must hit
-    elif state == 2:
-        dealer_score, player_score = game_logic.check_score(dealer=True, player=True)
-        if dealer_score == 17:
-            if dealer_score > player_score:
-                print(f"\nThe dealer won with a score of: {dealer_score}."
-                      f"\nThe player's score was: {player_score}.")
-                game = False
-            elif dealer_score < player_score:
-                print(f"\nThe player won with a score of: {player_score}."
-                      f"\nThe dealer's score was: {dealer_score}.")
-                game = False
-            else:
-                print(f"\nIt was a push. Both the player and dealer had a score of: {dealer_score}.")
-                game = False
-        elif dealer_score < 17:
-            dealer_card = bj_deck.draw_card(dealer=True)
-            dealer_score = game_logic.check_score(dealer=True)
-            if dealer_score == 21:
-                player_score = game_logic.check_score(player=True)
-                if player_score == 21:
-                    print(f"It was a push. Both the player and dealer had a score of: {dealer_score}")
-                    game = False
-                else:
-                    print(f"The dealer won with a score of: {dealer_score}. \nThe player's score was: {player_score}.")
-                    game = False
-        else:
-            print(f"\nThe dealer busted with a score of: {dealer_score}."
-                  f"The player won with a score of: {player_score}")
-            game = False
+    else:
+        game_number = game_logic.play_round(deck=bj_deck, logic=game_logic, game_number=game_number)
+        print(f"The Graveyard consists of {bj_deck.graveyard}")

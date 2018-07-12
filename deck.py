@@ -36,10 +36,10 @@ class Deck:
     drawn_cards = []
     dealer_hand = []
     player_one_hand = []
+    graveyard = []
     card_count = 0
 
     def __init__(self):
-        # deck = []
         cards = {}
         value = 1
         for suite in Suites:
@@ -74,12 +74,12 @@ class Deck:
 
     def show_hand(self, player=False, dealer=False):
         if player == True and dealer == True:
-            print("Dealer: %s " % self.dealer_hand)
+            print("\nDealer: %s " % self.dealer_hand)
             print("Player one: %s" % self.player_one_hand)
         elif player == True and dealer == False:
-            print("Player one: %s" % self.player_one_hand)
+            print("\nPlayer one: %s" % self.player_one_hand)
         elif player == False and dealer == True:
-            print("Dealer: %s " % self.dealer_hand)
+            print("\nDealer: %s " % self.dealer_hand)
 
     def draw_card(self, player=False, dealer=False):
         if player == True and dealer == True:
@@ -106,6 +106,23 @@ class Deck:
             print("Draw card")
         else:
             print("Deck needs to be recreated and shuffled.")
+
+    def reset_hands(self, print_graveyard=False):
+        play_hand = True
+        deal_hand = True
+        while play_hand:
+            if not self.player_one_hand:
+                play_hand = False
+            else:
+                self.graveyard.append(self.player_one_hand.pop())
+        while deal_hand:
+            if not self.dealer_hand:
+                deal_hand = False
+            else:
+                self.graveyard.append(self.dealer_hand.pop())
+        if print_graveyard is True:
+            for card in self.graveyard:
+                print(f"{card[0]}")
 
 def make_deck():
     deck = Deck()
