@@ -18,7 +18,7 @@ game_number = 1
 game = True
 
 while game:
-    if game_number > 1:
+    if game_number >= 1:
         print(f"\nGame number: {game_number}")
         play_again = input("type 'y' to continue or 'n' to end the game: ")
         if play_again == 'y':

@@ -15,28 +15,61 @@ class Logic:
     def set_score(self):
         self.__dealer_score__ = 0
         self.__p1_score__ = 0
-        for card in self.deck.dealer_hand:
-            if card[1] == 1:
-                if self.__dealer_score__ + 11 == 21:
-                    self.__dealer_score__ += 11
-                elif self.__dealer_score__ + 11 < 21:
-                    self.__dealer_score__ += 11
-                else:
-                    self.__dealer_score__ += card[1]
-                    continue
-            else:
-                self.__dealer_score__ += card[1]
+        for card in self.deck.dealer_hand:              
+             if self.deck.dealer_hand_is_soft == False:     # MAIN Case where no aces in hand OR ace is vaule of 1
+               if card[1] == 1:
+                  if self.__dealer_score__ + 11 > 21:         # Case where ace is value of 1
+                     self.__dealer_score__ += card[1]
+                  else:
+                       self.__dealer_score__ += 11            # Case where ace is value of 11
+                       self.deck.dealer_hand_is_soft = True
+               else:                                          # Case for all other cards
+                   self.__dealer_score__ += card[1]        
+             else:                                          # MAIN Case where ace is in hand and is value of 11
+                 if card[1] == 1:                             # Case where additional ace is drawn
+                   if self.__dealer_score__ + 1 > 21:           # Both ace values are 1
+                      self.__dealer_score__ += card[1]
+                      self.__dealer_score__ -= 10
+                      self.deck.dealer_hand_is_soft = False
+                   else:                                        # Ace in hand remains value of 11 and drawn ace is value of 1
+                        self.__dealer_score__ += card[1]
+                        self.deck.dealer_hand_is_soft = True
+                 else:                                        # Case where any other card is drawn
+                      if self.__dealer_score__ + card[1] > 21:  # Ace in hand reduced to value of 1
+                         self.__dealer_score__ += card[1]
+                         self.__dealer_score__ -= 10
+                         self.deck.dealer_hand_is_soft = False
+                      else:                                     # Ace remains value of 11
+                            self.__dealer_score__ += card[1]
+                            self.deck.dealer_hand_is_soft = True
         for card in self.deck.player_one_hand:
-            if card[1] == 1:
-                if self.__p1_score__ + 11 == 21:
-                    self.__p1_score__ += 11
-                elif self.__p1_score__ + 11 < 21:
-                    self.__p1_score__ += 11
-                else:
-                    self.__p1_score__ += card[1]
-                    continue
+            if self.deck.player_one_hand_is_soft == False:
+               if card[1] == 1:
+                  if self.__p1_score__ + 11 > 21:
+                     self.__p1_score__ += card[1]
+                  else:
+                       self.__p1_score__ += 11
+                       self.deck.player_one_hand_is_soft = True
+               else:
+                   self.__p1_score__ += card[1]
             else:
-                self.__p1_score__ += card[1]
+                 if card[1] == 1:
+                   if self.__p1_score__ + 1 > 21:
+                      self.__p1_score__ += card[1]
+                      self.__p1_score__ -= 10
+                      self.deck.player_one_hand_is_soft = False
+                   else:
+                        self.__p1_score__ += card[1]
+                        self.deck.player_one_hand_is_soft = True
+                 else:
+                      if self.__p1_score__ + card[1] > 21:
+                         self.__p1_score__ += card[1]
+                         self.__p1_score__ -= 10
+                         self.deck.player_one_hand_is_soft = False
+                      else:
+                            self.__p1_score__ += card[1]
+                            self.deck.player_one_hand_is_soft = True
+            
         return self.__dealer_score__, self.__p1_score__
 
     # Method used to evaluate the scores

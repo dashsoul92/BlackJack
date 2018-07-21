@@ -35,7 +35,9 @@ class Deck:
     deck = []
     drawn_cards = []
     dealer_hand = []
+    dealer_hand_is_soft = False
     player_one_hand = []
+    player_one_hand_is_soft = False
     graveyard = []
     card_count = 0
 
