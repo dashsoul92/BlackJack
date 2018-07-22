@@ -78,7 +78,7 @@ class Logic:
                     state = 2
                 elif player_score < 21:
                     logic.check_score(dealer=True, player=True, print_score=True)
-                    player_response = input("Type 'h' to hit or 's' to stand: ")
+                    player_response = str(input("Type 'h' to hit or 's' to stand: "))
                     # Hitting
                     if player_response == 'h':
                         deck.draw_card(player=True)
@@ -92,6 +92,7 @@ class Logic:
                     game_number += 1
                     deck.show_hand(dealer=True, player=True)
                     deck.reset_hands()
+                    deck.check_graveyard()
                     game_round = False
                     return game_number
             # Dealer logic for hitting and standing
@@ -106,6 +107,7 @@ class Logic:
                         game_number += 1
                         deck.show_hand(dealer=True, player=True)
                         deck.reset_hands()
+                        deck.check_graveyard()
                         game_round = False
                         return game_number
                     elif dealer_score < player_score:
@@ -114,6 +116,7 @@ class Logic:
                         game_number += 1
                         deck.show_hand()
                         deck.reset_hands()
+                        deck.check_graveyard()
                         game_round = False
                         return game_number
                     else:
@@ -121,6 +124,7 @@ class Logic:
                         game_number += 1
                         deck.show_hand()
                         deck.reset_hands()
+                        deck.check_graveyard()
                         game_round = False
                         return game_number
                 elif dealer_score < 17:
@@ -133,6 +137,7 @@ class Logic:
                             game_number += 1
                             deck.show_hand(dealer=True, player=True)
                             deck.reset_hands()
+                            deck.check_graveyard()
                             game_round = False
                             return game_number
                         else:
@@ -141,6 +146,7 @@ class Logic:
                             game_number += 1
                             deck.show_hand(dealer=True, player=True)
                             deck.reset_hands()
+                            deck.check_graveyard()
                             game_round = False
                             return game_number
                 elif dealer_score > 21:
@@ -149,6 +155,7 @@ class Logic:
                     game_number += 1
                     deck.show_hand(dealer=True, player=True)
                     deck.reset_hands()
+                    deck.check_graveyard()
                     game_round = False
                     return game_number
 
