@@ -60,52 +60,42 @@ class Deck:
         print(self.deck)
         print(len(self.deck), "cards in deck")
 
+    # A function used to shuffle the deck three times
     def shuffle_deck(self):
         for _ in range(3):
             shuffle(self.deck)
 
-    # Draw method which is used to remove two cards for each player
-    # Number of players is so we can get the correct number of cards for all of players
-    # Draw one card for each player, per iteration, until each player has received a card
+    # A function which is used to remove two cards for each player
+    # We draw one card for each player, per iteration, until both the player and dealer have received a card
     # This goes counter clockwise, starting with the dealer, and then proceeds from there
     def create_starting_hands(self):
         self.draw_card(player=True, dealer=True)
         self.draw_card(player=True, dealer=True)
 
     def show_hand(self, player=False, dealer=False):
-        if player == True and dealer == True:
+        if player is True and dealer is True:
             print("\nDealer: %s " % self.dealer_hand)
             print("Player one: %s" % self.player_one_hand)
-        elif player == True and dealer == False:
+        elif player is True and dealer is False:
             print("\nPlayer one: %s" % self.player_one_hand)
-        elif player == False and dealer == True:
+        elif player is False and dealer is True:
             print("\nDealer: %s " % self.dealer_hand)
 
     def draw_card(self, player=False, dealer=False):
-        if player == True and dealer == True:
+        if player is True and dealer is True:
             dealer_card = self.deck.pop()
             player_card = self.deck.pop()
             self.dealer_hand.append(dealer_card)
             self.player_one_hand.append(player_card)
-            self.card_count += 2
             return dealer_card, player_card
-        elif player == True and dealer == False:
+        elif player is True and dealer is False:
             player_card = self.deck.pop()
             self.player_one_hand.append(player_card)
-            self.card_count += 1
             return player_card
-        elif player == False and dealer == True:
+        elif player is False and dealer is True:
             dealer_card = self.deck.pop()
             self.dealer_hand.append(dealer_card)
-            self.card_count += 1
             return dealer_card
-
-    def get_card_count(self):
-        print("The card count is currently: %d" % self.card_count)
-        if self.card_count < 48:
-            print("Draw card")
-        else:
-            print("Deck needs to be recreated and shuffled.")
 
     def reset_hands(self, print_graveyard=False):
         play_hand = True
@@ -123,6 +113,23 @@ class Deck:
         if print_graveyard is True:
             for card in self.graveyard:
                 print(f"{card[0]}")
+
+    # A function used to check how many cards have been drawn out of the main deck
+    # If the number of cards is greater than or equal to 46 then we empty the graveyard back into the deck and shuffle it
+    def check_graveyard(self):
+        _graveyard_count = 0
+        _graveyard = True
+        for _ in self.graveyard:
+            _graveyard_count += 1
+        print(f"Graveyard count = {_graveyard_count}")
+        if _graveyard_count >= 46:
+            print("Time to create a new deck. AKA Shuffle the deck and reset the graveyard.")
+            while _graveyard:
+                if not self.graveyard:
+                    _graveyard = False
+                else:
+                    self.deck.append(self.graveyard.pop())
+        self.shuffle_deck()
 
 def make_deck():
     deck = Deck()
