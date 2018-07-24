@@ -15,6 +15,8 @@ class Logic:
     def set_score(self):
         self.__dealer_score__ = 0
         self.__p1_score__ = 0
+        self.deck.dealer_hand_is_soft = False
+        self.deck.player_one_hand_is_soft = False
         for card in self.deck.dealer_hand:              
              if self.deck.dealer_hand_is_soft == False:     # MAIN Case where no aces in hand OR ace is vaule of 1
                if card[1] == 1:
@@ -133,7 +135,7 @@ class Logic:
             # If the dealer's hand is less than 17 then, the dealer must hit
             elif state is 2:
                 dealer_score, player_score = logic.check_score(dealer=True, player=True)
-                if dealer_score == 17:
+                if dealer_score >= 17 and dealer_score <= 21:
                     if dealer_score > player_score:
                         print(f"\nThe dealer won with a score of: {dealer_score}."
                               f"\nThe player lost with a score of: {player_score}.")
