@@ -79,7 +79,8 @@ class Deck:
             print("\nDealer: %s " % self.dealer_hand)
             print("Player one: %s" % self.player_one_hand)
         elif player is True and dealer is False:
-            print("\nPlayer one: %s" % self.player_one_hand)
+            print("\nDealer: %s " % self.dealer_hand[0])
+            print("Player one: %s" % self.player_one_hand)
         elif player is False and dealer is True:
             print("\nDealer: %s " % self.dealer_hand)
 

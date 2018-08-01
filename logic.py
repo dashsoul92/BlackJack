@@ -75,7 +75,7 @@ class Logic:
         return self.__dealer_score__, self.__p1_score__
 
     # Method used to evaluate the scores
-    def check_score(self, dealer=False, player=False, print_score=False):
+    def check_score(self, dealer=False, player=False, print_score=False):       #look at this later
         self.set_score()
         if dealer == True and player == True and print_score == True:
             print(f"\nThe dealer's score is: {self.__dealer_score__}")
@@ -104,7 +104,7 @@ class Logic:
                 # The beginning of a round
                 # Create dealer and player hands
                 deck.create_starting_hands()
-                deck.show_hand(dealer=True, player=True)
+                deck.show_hand(dealer=False, player=True)
                 state = 1
             # Game controller for hitting and standing as the player
             elif state is 1:
@@ -112,11 +112,15 @@ class Logic:
                 if player_score == 21:
                     state = 2
                 elif player_score < 21:
+                    card_1 = deck.player_one_hand[0]
+                    card_2 = deck.player_one_hand[1]
+                    if card_1[1]  == card_2[1]:
+                        print("\nGood for split.")      #Add code to do split
                     logic.check_score(dealer=True, player=True, print_score=True)
                     while True:
                            try:
                                player_response = str(input("Type 'h' to hit or 's' to stand: "))
-                               if player_response not in (['h','s', 'dd','i','gg']):
+                               if player_response not in (['h','s', 'dd','i','gg','sp']):
                                   raise ValueError
                                break
                            except ValueError:
