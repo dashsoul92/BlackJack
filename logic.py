@@ -113,7 +113,14 @@ class Logic:
                     state = 2
                 elif player_score < 21:
                     logic.check_score(dealer=True, player=True, print_score=True)
-                    player_response = str(input("Type 'h' to hit or 's' to stand: "))
+                    while True:
+                           try:
+                               player_response = str(input("Type 'h' to hit or 's' to stand: "))
+                               if player_response not in (['h','s', 'dd','i','gg']):
+                                  raise ValueError
+                               break
+                           except ValueError:
+                                  print(player_response + " is an invalid input.")
                     # Hitting
                     if player_response == 'h':
                         deck.draw_card(player=True)
