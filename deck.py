@@ -37,6 +37,7 @@ class Deck:
     dealer_hand = []
     dealer_hand_is_soft = False
     player_one_hand = []
+    player_one = []
     player_one_hand_is_soft = False
     graveyard = []
     card_count = 0
@@ -71,16 +72,22 @@ class Deck:
     # We draw one card for each player, per iteration, until both the player and dealer have received a card
     # This goes counter clockwise, starting with the dealer, and then proceeds from there
     def create_starting_hands(self):
+        player_one_hand = []
+        self.player_one.append(player_one_hand)
         self.draw_card(player=True, dealer=True)
         self.draw_card(player=True, dealer=True)
 
     def show_hand(self, player=False, dealer=False):
         if player is True and dealer is True:
             print("\nDealer: %s " % self.dealer_hand)
-            print("Player one: %s" % self.player_one_hand)
+            print("Player one:")
+            for player_one_hand in self.player_one:
+                print(" %s" % player_one_hand)
         elif player is True and dealer is False:
             print("\nDealer: %s " % self.dealer_hand[0])
-            print("Player one: %s" % self.player_one_hand)
+            print("Player one:")
+            for player_one_hand in self.player_one:
+                print(" %s" % player_one_hand)
         elif player is False and dealer is True:
             print("\nDealer: %s " % self.dealer_hand)
 
@@ -89,11 +96,13 @@ class Deck:
             dealer_card = self.deck.pop()
             player_card = self.deck.pop()
             self.dealer_hand.append(dealer_card)
-            self.player_one_hand.append(player_card)
+            for player_one_hand in self.player_one:
+                player_one_hand.append(player_card)
             return dealer_card, player_card
         elif player is True and dealer is False:
             player_card = self.deck.pop()
-            self.player_one_hand.append(player_card)
+            for player_one_hand in self.player_one:
+                player_one_hand.append(player_card)
             return player_card
         elif player is False and dealer is True:
             dealer_card = self.deck.pop()
@@ -101,13 +110,19 @@ class Deck:
             return dealer_card
 
     def reset_hands(self, print_graveyard=False):
-        play_hand = True
         deal_hand = True
-        while play_hand:
-            if not self.player_one_hand:
+        for player_one_hand in self.player_one:
+            if not self.player_one:
                 play_hand = False
             else:
-                self.graveyard.append(self.player_one_hand.pop())
+                play_card = True
+                while play_card:
+                    if not player_one_hand:
+                        play_card = False
+                    else:
+                        self.graveyard.append(player_one_hand.pop())
+            self.player_one.pop()
+
         while deal_hand:
             if not self.dealer_hand:
                 deal_hand = False

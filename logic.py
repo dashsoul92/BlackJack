@@ -44,33 +44,34 @@ class Logic:
                       else:                                     # Ace remains value of 11
                             self.__dealer_score__ += card[1]
                             self.deck.dealer_hand_is_soft = True
-        for card in self.deck.player_one_hand:
-            if self.deck.player_one_hand_is_soft == False:
-               if card[1] == 1:
-                  if self.__p1_score__ + 11 > 21:
-                     self.__p1_score__ += card[1]
-                  else:
-                       self.__p1_score__ += 11
-                       self.deck.player_one_hand_is_soft = True
-               else:
-                   self.__p1_score__ += card[1]
-            else:
-                 if card[1] == 1:
-                   if self.__p1_score__ + 1 > 21:
-                      self.__p1_score__ += card[1]
-                      self.__p1_score__ -= 10
-                      self.deck.player_one_hand_is_soft = False
+        for player_one_hand in self.deck.player_one:
+            for card in player_one_hand:
+                if self.deck.player_one_hand_is_soft == False:
+                   if card[1] == 1:
+                      if self.__p1_score__ + 11 > 21:
+                         self.__p1_score__ += card[1]
+                      else:
+                        self.__p1_score__ += 11
+                        self.deck.player_one_hand_is_soft = True
                    else:
                         self.__p1_score__ += card[1]
-                        self.deck.player_one_hand_is_soft = True
-                 else:
-                      if self.__p1_score__ + card[1] > 21:
-                         self.__p1_score__ += card[1]
-                         self.__p1_score__ -= 10
-                         self.deck.player_one_hand_is_soft = False
-                      else:
+                else:
+                    if card[1] == 1:
+                        if self.__p1_score__ + 1 > 21:
                             self.__p1_score__ += card[1]
-                            self.deck.player_one_hand_is_soft = True
+                            self.__p1_score__ -= 10
+                            self.deck.player_one_hand_is_soft = False
+                        else:
+                             self.__p1_score__ += card[1]
+                             self.deck.player_one_hand_is_soft = True
+                    else:
+                        if self.__p1_score__ + card[1] > 21:
+                           self.__p1_score__ += card[1]
+                           self.__p1_score__ -= 10
+                           self.deck.player_one_hand_is_soft = False
+                        else:
+                             self.__p1_score__ += card[1]
+                             self.deck.player_one_hand_is_soft = True
             
         return self.__dealer_score__, self.__p1_score__
 
@@ -112,8 +113,9 @@ class Logic:
                 if player_score == 21:
                     state = 2
                 elif player_score < 21:
-                    card_1 = deck.player_one_hand[0]
-                    card_2 = deck.player_one_hand[1]
+                    player_one_hand = deck.player_one[0]
+                    card_1 = player_one_hand[0]
+                    card_2 = player_one_hand[1]
                     if card_1[1]  == card_2[1]:
                         print("\nGood for split.")      #Add code to do split
                     logic.check_score(dealer=True, player=True, print_score=True)
