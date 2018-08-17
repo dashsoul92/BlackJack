@@ -109,6 +109,10 @@ class Deck:
             self.dealer_hand.append(dealer_card)
             return dealer_card
 
+    def split_hand(self):
+        player_one_hand = [self.player_one[-1].pop()]
+        self.player_one.append(player_one_hand)
+
     def reset_hands(self, print_graveyard=False):
         deal_hand = True
         for player_one_hand in self.player_one:

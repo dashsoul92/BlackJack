@@ -3,11 +3,15 @@
 
 class Logic:
     __p1_score__ = 0
+    __splits_done__ = 0
+    __splits_allowed__ = 1
     __dealer_score__ = 0
     deck = []
 
     def __init__(self, deck):
         self.__p1_score__ = 0
+        self.__splits_done__ = 0
+        self.__splits_allowed__ = 1
         self.__dealer_score__ = 0
         self.deck = deck
 
@@ -105,7 +109,82 @@ class Logic:
                 # The beginning of a round
                 # Create dealer and player hands
                 deck.create_starting_hands()
-                deck.show_hand(dealer=False, player=True)
+                # Handle Insurance bet
+                __card_1__ = deck.dealer_hand[0]
+                if __card_1__[1] == 10 or __card_1__[1] == 1:
+                    deck.show_hand(dealer=False, player=True)
+                    while True:
+                           try:
+                               player_response = str(input("Type 'y' to Surrender or 'n' to continue: "))
+                               if player_response not in (['n','y']):
+                                  raise ValueError
+                               break
+                           except ValueError:
+                                  print(player_response + " is an invalid input.")
+                           # Surrender
+                    if player_response == 'y':
+                        # add bet
+                        print(f"\nThe dealer won with a score of: {dealer_score}. "
+                              f"\nThe player lost with a score of: {player_score}.")
+                        game_number += 1
+                        __splits_done__ = 0
+                        deck.show_hand(dealer=True, player=True)
+                        deck.reset_hands()
+                        deck.check_graveyard()
+                        game_round = False
+                        return game_number
+                    # Never Surrender!!!
+                    elif player_response == 'n':
+                        pass
+
+                    while True:
+                           try:
+                               player_response = str(input("Type 'y' to make Insurance bet or 'n' to continue: "))
+                               if player_response not in (['n','y']):
+                                  raise ValueError
+                               break
+                           except ValueError:
+                                  print(player_response + " is an invalid input.")
+                    # Insurance bet
+                    if player_response == 'y':
+                       pass # add bet
+                    # No bet
+                    elif player_response == 'n':
+                        pass
+                    __dealer_score__ = logic.check_score(dealer=True)
+                    if __dealer_score__ == 21:
+                        # pay insurance
+                        state = 2 # assume all bets can be handled in 2
+                        continue
+                    else:
+                        # lose insurance
+                        pass
+                else:
+                     while True:
+                           try:
+                               player_response = str(input("Type 'y' to Surrender or 'n' to continue: "))
+                               if player_response not in (['n','y']):
+                                  raise ValueError
+                               break
+                           except ValueError:
+                                  print(player_response + " is an invalid input.")
+                     # Surrender
+                     if player_response == 'y':
+                        # add bet
+                        print(f"\nThe dealer won with a score of: {dealer_score}. "
+                              f"\nThe player lost with a score of: {player_score}.")
+                        game_number += 1
+                        __splits_done__ = 0
+                        deck.show_hand(dealer=True, player=True)
+                        deck.reset_hands()
+                        deck.check_graveyard()
+                        game_round = False
+                        return game_number
+                     # Never Surrender!!!
+                     elif player_response == 'n':
+                         pass
+
+                deck.show_hand(dealer=True, player=True)
                 state = 1
             # Game controller for hitting and standing as the player
             elif state is 1:
@@ -113,16 +192,32 @@ class Logic:
                 if player_score == 21:
                     state = 2
                 elif player_score < 21:
+                    logic.check_score(dealer=True, player=True, print_score=True)
                     player_one_hand = deck.player_one[0]
                     card_1 = player_one_hand[0]
                     card_2 = player_one_hand[1]
-                    if card_1[1]  == card_2[1]:
-                        print("\nGood for split.")      #Add code to do split
-                    logic.check_score(dealer=True, player=True, print_score=True)
+                    if card_1[1] == card_2[1] and self.__splits_done__ < self.__splits_allowed__:
+                        while True:
+                           try:
+                               player_response = str(input("Type 'y' to split or 'n' to continue: "))
+                               if player_response not in (['n','y']):
+                                  raise ValueError
+                               break
+                           except ValueError:
+                                  print(player_response + " is an invalid input.")
+                        # Splitting
+                        if player_response == 'y':
+                            deck.split_hand()
+                            deck.draw_card(player=True)
+                            state = 3
+                            continue
+                        # Not Splittng
+                        elif player_response == 'n':
+                            pass
                     while True:
                            try:
                                player_response = str(input("Type 'h' to hit or 's' to stand: "))
-                               if player_response not in (['h','s', 'dd','i','gg','sp']):
+                               if player_response not in (['h','s', 'dd']):
                                   raise ValueError
                                break
                            except ValueError:
@@ -148,11 +243,12 @@ class Logic:
             # If the dealer's hand is less than 17 then, the dealer must hit
             elif state is 2:
                 dealer_score, player_score = logic.check_score(dealer=True, player=True)
-                if dealer_score >= 17 and dealer_score <= 21:
+                if dealer_score >= 17 and dealer_score <= 21 or player_score == 21:
                     if dealer_score > player_score:
                         print(f"\nThe dealer won with a score of: {dealer_score}."
                               f"\nThe player lost with a score of: {player_score}.")
                         game_number += 1
+                        __splits_done__ = 0
                         deck.show_hand(dealer=True, player=True)
                         deck.reset_hands()
                         deck.check_graveyard()
@@ -162,7 +258,8 @@ class Logic:
                         print(f"\nThe dealer lost with a score of: {dealer_score}."
                               f"\nThe player won with a score of: {player_score}.")
                         game_number += 1
-                        deck.show_hand()
+                        __splits_done__ = 0
+                        deck.show_hand(dealer=True, player=True)
                         deck.reset_hands()
                         deck.check_graveyard()
                         game_round = False
@@ -170,7 +267,8 @@ class Logic:
                     else:
                         print(f"\nIt was a push. Both the player and dealer had a score of: {dealer_score}.")
                         game_number += 1
-                        deck.show_hand()
+                        __splits_done__ = 0
+                        deck.show_hand(dealer=True, player=True)
                         deck.reset_hands()
                         deck.check_graveyard()
                         game_round = False
@@ -183,6 +281,7 @@ class Logic:
                         if player_score == 21:
                             print(f"It was a push. Both the player and dealer had a score of: {dealer_score}")
                             game_number += 1
+                            __splits_done__ = 0
                             deck.show_hand(dealer=True, player=True)
                             deck.reset_hands()
                             deck.check_graveyard()
@@ -192,6 +291,7 @@ class Logic:
                             print(f"\nThe dealer won with a score of: {dealer_score}. "
                                   f"\nThe player lost with a score of: {player_score}.")
                             game_number += 1
+                            __splits_done__ = 0
                             deck.show_hand(dealer=True, player=True)
                             deck.reset_hands()
                             deck.check_graveyard()
@@ -201,11 +301,14 @@ class Logic:
                     print(f"\nThe dealer busted with a score of: {dealer_score}."
                           f"\nThe player won with a score of: {player_score}")
                     game_number += 1
+                    __splits_done__ = 0
                     deck.show_hand(dealer=True, player=True)
                     deck.reset_hands()
                     deck.check_graveyard()
                     game_round = False
                     return game_number
+            elif state is 3:
+
 
 
 # A method used to create the logic object
