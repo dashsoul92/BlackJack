@@ -3,22 +3,28 @@
 
 class Logic:
     __p1_score__ = 0
+    __p1_score_2__ = 0
     __splits_done__ = 0
     __splits_allowed__ = 1
     __dealer_score__ = 0
+    __player_score_list__ = []
     deck = []
 
     def __init__(self, deck):
         self.__p1_score__ = 0
+        self.__p1_score_2__ = 0
         self.__splits_done__ = 0
         self.__splits_allowed__ = 1
         self.__dealer_score__ = 0
+        self.__player_score_list__ = []
         self.deck = deck
 
     # Method used to set the scores
-    def set_score(self):
+    def set_score(self, __has_split__ = False):
         self.__dealer_score__ = 0
         self.__p1_score__ = 0
+        self.__p1_score_2__ = 0
+        self.__player_score_list__ = []
         self.deck.dealer_hand_is_soft = False
         self.deck.player_one_hand_is_soft = False
         for card in self.deck.dealer_hand:              
@@ -49,6 +55,7 @@ class Logic:
                             self.__dealer_score__ += card[1]
                             self.deck.dealer_hand_is_soft = True
         for player_one_hand in self.deck.player_one:
+            self.__p1_score__ = 0
             for card in player_one_hand:
                 if self.deck.player_one_hand_is_soft == False:
                    if card[1] == 1:
@@ -76,8 +83,13 @@ class Logic:
                         else:
                              self.__p1_score__ += card[1]
                              self.deck.player_one_hand_is_soft = True
+            __score_to_add_to_list__ = str(self.__p1_score__)
+            self.__player_score_list__.append(__score_to_add_to_list__)
             
-        return self.__dealer_score__, self.__p1_score__
+        if __has_split__ == True:
+            return self.__dealer_score__, self.__player_score_list__
+        else:
+            return self.__dealer_score__, self.__p1_score__
 
     # Method used to evaluate the scores
     def check_score(self, dealer=False, player=False, print_score=False):       #look at this later
@@ -124,8 +136,7 @@ class Logic:
                            # Surrender
                     if player_response == 'y':
                         # add bet
-                        print(f"\nThe dealer won with a score of: {dealer_score}. "
-                              f"\nThe player lost with a score of: {player_score}.")
+                        print(f"\nYou Surrendered")
                         game_number += 1
                         __splits_done__ = 0
                         deck.show_hand(dealer=True, player=True)
@@ -160,6 +171,7 @@ class Logic:
                         # lose insurance
                         pass
                 else:
+                     deck.show_hand(dealer=False, player=True)
                      while True:
                            try:
                                player_response = str(input("Type 'y' to Surrender or 'n' to continue: "))
@@ -171,8 +183,7 @@ class Logic:
                      # Surrender
                      if player_response == 'y':
                         # add bet
-                        print(f"\nThe dealer won with a score of: {dealer_score}. "
-                              f"\nThe player lost with a score of: {player_score}.")
+                        print(f"\nYou Surrendered.")
                         game_number += 1
                         __splits_done__ = 0
                         deck.show_hand(dealer=True, player=True)
@@ -307,8 +318,193 @@ class Logic:
                     deck.check_graveyard()
                     game_round = False
                     return game_number
+            #same as state 1 but for split hands
             elif state is 3:
+                __has_split__ = True
+                __p1_hand_actions_done__ = False
+                __p1_hand_2_actions_done__ = False
+                while True:
+                    self.set_score(__has_split__)
+                    __p1_score__ = int(self.__player_score_list__[0])
+                    __p1_score_2__ = int(self.__player_score_list__[1])
+                    player_score = __p1_score__
+                    deck.show_hand(player=True, dealer=True)
+                    if player_score >= 21:
+                        __p1_hand_actions_done__ = True
+                    player_score = __p1_score_2__
+                    if player_score >= 21:
+                        __p1_hand_2_actions_done__ = True
 
+                    if __p1_hand_actions_done__ == True and __p1_hand_2_actions_done__ == True:
+                        state = 4
+                        break
+                    elif __p1_hand_actions_done__ == True and __p1_hand_2_actions_done__ == False:
+                        print(f"\nThe dealer's score is: {self.__dealer_score__}")
+                        print(f"The player's scores are: {__p1_score__}, {__p1_score_2__}")
+                        while True:
+                               try:
+                                   player_response = str(input("Type 'h' to hit or 's' to stand for hand 2: "))
+                                   if player_response not in (['h','s', 'dd']):
+                                      raise ValueError
+                                   break
+                               except ValueError:
+                                      print(player_response + " is an invalid input.")
+                        # Hitting
+                        if player_response == 'h':
+                           # playing_hand = deck.player_one[1]
+                            deck.draw_single_card(hand_1=False)
+                        # Standing
+                        elif player_response == 's':
+                            __p1_hand_2_actions_done__ = True
+                               
+                    elif __p1_hand_actions_done__ == False and __p1_hand_2_actions_done__ == True:
+                        print(f"\nThe dealer's score is: {self.__dealer_score__}")
+                        print(f"The player's scores are: {__p1_score__}, {__p1_score_2__}")
+                        while True:
+                               try:
+                                   player_response = str(input("Type 'h' to hit or 's' to stand for hand 1: "))
+                                   if player_response not in (['h','s', 'dd']):
+                                      raise ValueError
+                                   break
+                               except ValueError:
+                                      print(player_response + " is an invalid input.")
+                        # Hitting
+                        if player_response == 'h':
+                            deck.draw_single_card(hand_1=True)
+                        # Standing
+                        elif player_response == 's':
+                            __p1_hand_actions_done__ = True
+                                
+                    else:
+                        print(f"\nThe dealer's score is: {self.__dealer_score__}")
+                        print(f"The player's scores are: {__p1_score__}, {__p1_score_2__}")
+                        while True:
+                               try:
+                                   player_response = str(input("Type 'h' to hit or 's' to stand for hand 1: "))
+                                   if player_response not in (['h','s', 'dd']):
+                                      raise ValueError
+                                   break
+                               except ValueError:
+                                      print(player_response + " is an invalid input.")
+                        # Hitting
+                        if player_response == 'h':
+                            deck.draw_single_card(hand_1=True)
+                        # Standing
+                        elif player_response == 's':
+                            __p1_hand_actions_done__ = True
+
+                        while True:
+                               try:
+                                   player_response = str(input("Type 'h' to hit or 's' to stand for hand 2: "))
+                                   if player_response not in (['h','s', 'dd']):
+                                      raise ValueError
+                                   break
+                               except ValueError:
+                                      print(player_response + " is an invalid input.")
+                        # Hitting
+                        if player_response == 'h':
+                            deck.draw_single_card(hand_1=False)
+                        # Standing
+                        elif player_response == 's':
+                            __p1_hand_2_actions_done__ = True
+            # same as state 1 bt for split hands                
+            elif state is 4:
+                dealer_score = logic.check_score(dealer=True)
+                player_score_1 = __p1_score__
+                player_score_2 = __p1_score_2__
+                one_hand_busted = False
+                if player_score_1 > 21 or player_score_2 > 21:
+                    if player_score_1 > 21 and player_score_2 > 21:
+                            print(f"\nThe dealer won with a score of: {dealer_score}."
+                            f"\nThe player busted with scores of: {player_score_1}, {player_score_2}.")
+                            continue
+                    elif player_score_1 > 21 and player_score_2 <= 21:
+                        print(f"\nThe dealer won with a score of: {dealer_score}."
+                            f"\nThe player 1 hand busted with score of: {player_score_1}.")
+                        one_hand_busted = True
+                        player_score_1 = dealer_score
+                    elif player_score_2 > 21 and player_score_1 <= 21:
+                        print(f"\nThe dealer won with a score of: {dealer_score}."
+                            f"\nThe player 2 hand busted with score of: {player_score_2}.")
+                        one_hand_busted = True
+                        player_score_2 = dealer_score
+                           
+                if dealer_score >= 17 and dealer_score <= 21:
+                    if dealer_score > player_score_1:
+                        print(f"\nThe dealer won with a score of: {dealer_score}."
+                              f"\nThe player hand 1 lost with a score of: {player_score_1}.")
+                    elif dealer_score < player_score_1:
+                        print(f"\nThe dealer lost with a score of: {dealer_score}."
+                              f"\nThe player hand 1 won with a score of: {player_score_1}.")
+                    elif one_hand_busted == True:
+                        pass
+                    else:
+                        print(f"\nIt was a push. Both the player hand 1 and dealer had a score of: {dealer_score}.")
+
+                    if dealer_score > player_score_2:
+                        print(f"\nThe dealer won with a score of: {dealer_score}."
+                              f"\nThe player hand 2 lost with a score of: {player_score_2}.")
+                    elif dealer_score < player_score_2:
+                        print(f"\nThe dealer lost with a score of: {dealer_score}."
+                              f"\nThe player hand 2 won with a score of: {player_score_2}.")
+                    elif one_hand_busted == True:
+                        pass
+                    else:
+                        print(f"\nIt was a push. Both the player hand 2 and dealer had a score of: {dealer_score}.")
+
+                    game_number += 1
+                    __splits_done__ = 0
+                    deck.show_hand(dealer=True, player=True)
+                    deck.reset_hands()
+                    deck.check_graveyard()
+                    game_round = False
+                    return game_number
+                elif dealer_score < 17:
+                    deck.draw_card(dealer=True)
+                    dealer_score = logic.check_score(dealer=True)
+                    if dealer_score == 21:
+                        if player_score_1 == 21:
+                            print(f"It was a push. Both the player hand 1 and dealer had a score of: {dealer_score}")
+                        elif one_hand_busted == True:
+                            pass
+                        else:
+                            print(f"\nThe dealer won with a score of: {dealer_score}. "
+                                  f"\nThe player hand 1 lost with a score of: {player_score_1}.")
+                        if player_score_2 == 21:
+                            print(f"It was a push. Both the player hand 2 and dealer had a score of: {dealer_score}")
+                        elif one_hand_busted == True:
+                            pass
+                        else:
+                            print(f"\nThe dealer won with a score of: {dealer_score}. "
+                                  f"\nThe player hand 2 lost with a score of: {player_score_2}.")
+                        game_number += 1
+                        __splits_done__ = 0
+                        deck.show_hand(dealer=True, player=True)
+                        deck.reset_hands()
+                        deck.check_graveyard()
+                        game_round = False
+                        return game_number
+                elif dealer_score > 21:
+                    if one_hand_busted == False:
+                        print(f"\nThe dealer busted with a score of: {dealer_score}."
+                          f"\nThe player won with a scores of: {player_score_1, player_score_2}")
+                    else:
+                        if player_score_1 < dealer_score:
+                            print(f"\nThe dealer busted with a score of: {dealer_score}."
+                                f"\nThe player hand 1 with a score of: {player_score_1}")
+                        else:
+                            print(f"\nThe dealer busted with a score of: {dealer_score}."
+                                 f"\nThe player hand 2 won with a score of: {player_score_2}")
+                    game_number += 1
+                    __splits_done__ = 0
+                    deck.show_hand(dealer=True, player=True)
+                    deck.reset_hands()
+                    deck.check_graveyard()
+                    game_round = False
+                    return game_number
+
+
+                
 
 
 # A method used to create the logic object

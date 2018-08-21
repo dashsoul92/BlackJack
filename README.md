@@ -1,7 +1,7 @@
 # BlackJack
 **TODO**
 - [] Create logic to handle bets
-- [] Create logic to handle splitting a hand (when the player or dealer draws two of the same card, for their starting hand)
+- [DONE] Create logic to handle splitting a hand (when the player or dealer draws two of the same card, for their starting hand)
 - [DONE] Create logic for Insurance bet and update dealer hand reveal
 - [] Create logic for Double Down
 - [DONE] Create logic for Surrender

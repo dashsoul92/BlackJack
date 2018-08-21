@@ -94,14 +94,14 @@ class Deck:
     def draw_card(self, player=False, dealer=False):
         if player is True and dealer is True:
             dealer_card = self.deck.pop()
-            player_card = self.deck.pop()
             self.dealer_hand.append(dealer_card)
             for player_one_hand in self.player_one:
+                player_card = self.deck.pop()
                 player_one_hand.append(player_card)
             return dealer_card, player_card
         elif player is True and dealer is False:
-            player_card = self.deck.pop()
             for player_one_hand in self.player_one:
+                player_card = self.deck.pop()
                 player_one_hand.append(player_card)
             return player_card
         elif player is False and dealer is True:
@@ -112,6 +112,13 @@ class Deck:
     def split_hand(self):
         player_one_hand = [self.player_one[-1].pop()]
         self.player_one.append(player_one_hand)
+
+    def draw_single_card(self, hand_1 = False):
+        card = self.deck.pop()
+        if hand_1 == False:
+            self.player_one[1].append(card)
+        else:
+            self.player_one[0].append(card)
 
     def reset_hands(self, print_graveyard=False):
         deal_hand = True
