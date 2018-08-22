@@ -121,45 +121,25 @@ class Logic:
                 # The beginning of a round
                 # Create dealer and player hands
                 deck.create_starting_hands()
+                deck.show_hand(dealer=False, player=True)
+                logic.check_score(player=True, print_score=True)
+
+                # Handle Surrender
+                player_response = self.asking_player("Type 'y' to Surrender or 'n' to continue: ", ['y','n'])
+                if player_response == 'y':
+                    # add bet
+                    print(f"\nYou Surrendered.")
+                    game_number = self.end_game(deck, logic, game_number)
+                    return game_number
+                elif player_response == 'n':
+                    pass
+
                 # Handle Insurance bet
                 __card_1__ = deck.dealer_hand[0]
                 if __card_1__[1] == 10 or __card_1__[1] == 1:
-                    deck.show_hand(dealer=False, player=True)
-                    while True:
-                           try:
-                               player_response = str(input("Type 'y' to Surrender or 'n' to continue: "))
-                               if player_response not in (['n','y']):
-                                  raise ValueError
-                               break
-                           except ValueError:
-                                  print(player_response + " is an invalid input.")
-                           # Surrender
-                    if player_response == 'y':
-                        # add bet
-                        print(f"\nYou Surrendered")
-                        game_number += 1
-                        __splits_done__ = 0
-                        deck.show_hand(dealer=True, player=True)
-                        deck.reset_hands()
-                        deck.check_graveyard()
-                        game_round = False
-                        return game_number
-                    # Never Surrender!!!
-                    elif player_response == 'n':
-                        pass
-
-                    while True:
-                           try:
-                               player_response = str(input("Type 'y' to make Insurance bet or 'n' to continue: "))
-                               if player_response not in (['n','y']):
-                                  raise ValueError
-                               break
-                           except ValueError:
-                                  print(player_response + " is an invalid input.")
-                    # Insurance bet
+                    player_response = self.asking_player("Type 'y' to make Insurance bet or 'n' to continue: ", ['n','y'])
                     if player_response == 'y':
                        pass # add bet
-                    # No bet
                     elif player_response == 'n':
                         pass
                     __dealer_score__ = logic.check_score(dealer=True)
@@ -170,84 +150,66 @@ class Logic:
                     else:
                         # lose insurance
                         pass
-                else:
-                     deck.show_hand(dealer=False, player=True)
-                     while True:
-                           try:
-                               player_response = str(input("Type 'y' to Surrender or 'n' to continue: "))
-                               if player_response not in (['n','y']):
-                                  raise ValueError
-                               break
-                           except ValueError:
-                                  print(player_response + " is an invalid input.")
-                     # Surrender
-                     if player_response == 'y':
-                        # add bet
-                        print(f"\nYou Surrendered.")
-                        game_number += 1
-                        __splits_done__ = 0
-                        deck.show_hand(dealer=True, player=True)
-                        deck.reset_hands()
-                        deck.check_graveyard()
-                        game_round = False
-                        return game_number
-                     # Never Surrender!!!
-                     elif player_response == 'n':
-                         pass
-
+                
+                player_score = logic.check_score(player=True)
+                if player_score == 21:
+                    state = 2
+                    continue
                 deck.show_hand(dealer=True, player=True)
+                logic.check_score(dealer=True, player=True, print_score=True)
+
+                # Handle Double Down
+                player_response = self.asking_player("Type 'y' to Double Down or 'n' to continue: ", ['y','n'])
+                if player_response == 'y':
+                    deck.draw_card(player=True)
+                    player_score = logic.check_score(player=True)
+                    if player_score > 21:
+                        dealer_score, player_score = logic.check_score(dealer=True, player=True, print_score=False)
+                        print(f"\nThe dealer won with a score of: {dealer_score}."
+                             f"\nThe player busted with a score of: {player_score}.")
+                        game_number = self.end_game(deck, logic, game_number)
+                        return game_number
+                    else:
+                        state = 2
+                        continue
+                elif player_response == 'n':
+                    pass
                 state = 1
-            # Game controller for hitting and standing as the player
+
+            # Game controller for splitting, hitting and standing as the player
             elif state is 1:
                 player_score = logic.check_score(player=True)
                 if player_score == 21:
                     state = 2
                 elif player_score < 21:
                     logic.check_score(dealer=True, player=True, print_score=True)
+
+                    # Handle Splitting
                     player_one_hand = deck.player_one[0]
                     card_1 = player_one_hand[0]
                     card_2 = player_one_hand[1]
                     if card_1[1] == card_2[1] and self.__splits_done__ < self.__splits_allowed__:
-                        while True:
-                           try:
-                               player_response = str(input("Type 'y' to split or 'n' to continue: "))
-                               if player_response not in (['n','y']):
-                                  raise ValueError
-                               break
-                           except ValueError:
-                                  print(player_response + " is an invalid input.")
-                        # Splitting
+                        player_response = self.asking_player("Type 'y' to split or 'n' to continue: ",['n','y'])
                         if player_response == 'y':
                             deck.split_hand()
                             deck.draw_card(player=True)
                             state = 3
                             continue
-                        # Not Splittng
                         elif player_response == 'n':
                             pass
-                    while True:
-                           try:
-                               player_response = str(input("Type 'h' to hit or 's' to stand: "))
-                               if player_response not in (['h','s', 'dd']):
-                                  raise ValueError
-                               break
-                           except ValueError:
-                                  print(player_response + " is an invalid input.")
-                    # Hitting
+                    
+                    # Handle hit and stand
+                    player_response = self.asking_player("Type 'h' to hit or 's' to stand: ",['h','s'])    
                     if player_response == 'h':
                         deck.draw_card(player=True)
-                    # Standing
                     elif player_response == 's':
                         state = 2
+
                 elif player_score > 21:
                     dealer_score, player_score = logic.check_score(dealer=True, player=True, print_score=False)
                     print(f"\nThe dealer won with a score of: {dealer_score}."
                           f"\nThe player busted with a score of: {player_score}.")
-                    game_number += 1
-                    deck.show_hand(dealer=True, player=True)
-                    deck.reset_hands()
-                    deck.check_graveyard()
-                    game_round = False
+                    game_number = self.end_game(deck, logic, game_number)
                     return game_number
             # Dealer logic for hitting and standing
             # If the dealer's hand is 17 or higher then, the dealer will always stand
@@ -258,31 +220,16 @@ class Logic:
                     if dealer_score > player_score:
                         print(f"\nThe dealer won with a score of: {dealer_score}."
                               f"\nThe player lost with a score of: {player_score}.")
-                        game_number += 1
-                        __splits_done__ = 0
-                        deck.show_hand(dealer=True, player=True)
-                        deck.reset_hands()
-                        deck.check_graveyard()
-                        game_round = False
+                        game_number = self.end_game(deck, logic, game_number)
                         return game_number
                     elif dealer_score < player_score:
                         print(f"\nThe dealer lost with a score of: {dealer_score}."
                               f"\nThe player won with a score of: {player_score}.")
-                        game_number += 1
-                        __splits_done__ = 0
-                        deck.show_hand(dealer=True, player=True)
-                        deck.reset_hands()
-                        deck.check_graveyard()
-                        game_round = False
+                        game_number = self.end_game(deck, logic, game_number)
                         return game_number
                     else:
                         print(f"\nIt was a push. Both the player and dealer had a score of: {dealer_score}.")
-                        game_number += 1
-                        __splits_done__ = 0
-                        deck.show_hand(dealer=True, player=True)
-                        deck.reset_hands()
-                        deck.check_graveyard()
-                        game_round = False
+                        game_number = self.end_game(deck, logic, game_number)
                         return game_number
                 elif dealer_score < 17:
                     deck.draw_card(dealer=True)
@@ -291,38 +238,24 @@ class Logic:
                         player_score = logic.check_score(player=True)
                         if player_score == 21:
                             print(f"It was a push. Both the player and dealer had a score of: {dealer_score}")
-                            game_number += 1
-                            __splits_done__ = 0
-                            deck.show_hand(dealer=True, player=True)
-                            deck.reset_hands()
-                            deck.check_graveyard()
-                            game_round = False
+                            game_number = self.end_game(deck, logic, game_number)
                             return game_number
                         else:
                             print(f"\nThe dealer won with a score of: {dealer_score}. "
                                   f"\nThe player lost with a score of: {player_score}.")
-                            game_number += 1
-                            __splits_done__ = 0
-                            deck.show_hand(dealer=True, player=True)
-                            deck.reset_hands()
-                            deck.check_graveyard()
-                            game_round = False
+                            game_number = self.end_game(deck, logic, game_number)
                             return game_number
                 elif dealer_score > 21:
                     print(f"\nThe dealer busted with a score of: {dealer_score}."
                           f"\nThe player won with a score of: {player_score}")
-                    game_number += 1
-                    __splits_done__ = 0
-                    deck.show_hand(dealer=True, player=True)
-                    deck.reset_hands()
-                    deck.check_graveyard()
-                    game_round = False
+                    game_number = self.end_game(deck, logic, game_number)
                     return game_number
             #same as state 1 but for split hands
             elif state is 3:
                 __has_split__ = True
                 __p1_hand_actions_done__ = False
                 __p1_hand_2_actions_done__ = False
+                __dd_allowed__ = True
                 while True:
                     self.set_score(__has_split__)
                     __p1_score__ = int(self.__player_score_list__[0])
@@ -341,73 +274,83 @@ class Logic:
                     elif __p1_hand_actions_done__ == True and __p1_hand_2_actions_done__ == False:
                         print(f"\nThe dealer's score is: {self.__dealer_score__}")
                         print(f"The player's scores are: {__p1_score__}, {__p1_score_2__}")
-                        while True:
-                               try:
-                                   player_response = str(input("Type 'h' to hit or 's' to stand for hand 2: "))
-                                   if player_response not in (['h','s', 'dd']):
-                                      raise ValueError
-                                   break
-                               except ValueError:
-                                      print(player_response + " is an invalid input.")
-                        # Hitting
+
+                        # Handle Double Down
+                        if __dd_allowed__ == True:
+                            player_response = self.asking_player("Type 'y' to Double Down for hand 2 or 'n' to continue: ", ['y','n'])
+                            if player_response == 'y':
+                                deck.draw_single_card(hand_1=False)
+                                __dd_allowed__ = False
+                                continue
+                            elif player_response == 'n':
+                                __dd_allowed__ = False
+
+                        # Handle hit and stand
+                        player_response = self.asking_player("Type 'h' to hit or 's' to stand for hand 2: ",['h','s'])                        
                         if player_response == 'h':
                            # playing_hand = deck.player_one[1]
                             deck.draw_single_card(hand_1=False)
-                        # Standing
                         elif player_response == 's':
                             __p1_hand_2_actions_done__ = True
                                
                     elif __p1_hand_actions_done__ == False and __p1_hand_2_actions_done__ == True:
                         print(f"\nThe dealer's score is: {self.__dealer_score__}")
                         print(f"The player's scores are: {__p1_score__}, {__p1_score_2__}")
-                        while True:
-                               try:
-                                   player_response = str(input("Type 'h' to hit or 's' to stand for hand 1: "))
-                                   if player_response not in (['h','s', 'dd']):
-                                      raise ValueError
-                                   break
-                               except ValueError:
-                                      print(player_response + " is an invalid input.")
-                        # Hitting
+
+                        # Handle Double Down
+                        if __dd_allowed__ == True:
+                            player_response = self.asking_player("Type 'y' to Double Down for hand 1 or 'n' to continue: ", ['y','n'])
+                            if player_response == 'y':
+                                deck.draw_single_card(hand_1=True)
+                                __dd_allowed__ = False
+                                continue
+                            elif player_response == 'n':
+                                __dd_allowed__ = False
+
+                        # Handle hit and stand
+                        player_response = self.asking_player("Type 'h' to hit or 's' to stand for hand 1: ",['h','s'])                        
                         if player_response == 'h':
                             deck.draw_single_card(hand_1=True)
-                        # Standing
                         elif player_response == 's':
                             __p1_hand_actions_done__ = True
                                 
                     else:
                         print(f"\nThe dealer's score is: {self.__dealer_score__}")
                         print(f"The player's scores are: {__p1_score__}, {__p1_score_2__}")
-                        while True:
-                               try:
-                                   player_response = str(input("Type 'h' to hit or 's' to stand for hand 1: "))
-                                   if player_response not in (['h','s', 'dd']):
-                                      raise ValueError
-                                   break
-                               except ValueError:
-                                      print(player_response + " is an invalid input.")
-                        # Hitting
+
+                        # Handle Double Down
+                        if __dd_allowed__ == True:
+                            player_response = self.asking_player("Type 'y' to Double Down for hand 1 or 'n' to continue: ", ['y','n'])
+                            if player_response == 'y':
+                                deck.draw_single_card(hand_1=True)
+                                __p1_hand_actions_done__ = True
+                                continue
+                            elif player_response == 'n':
+                                pass
+
+                            player_response = self.asking_player("Type 'y' to Double Down for hand 2 or 'n' to continue: ", ['y','n'])
+                            if player_response == 'y':
+                                deck.draw_single_card(hand_1=False)
+                                __dd_allowed__ = False
+                                __p1_hand_2_actions_done__ = True
+                                continue
+                            elif player_response == 'n':
+                                __dd_allowed__ = False
+
+                        # Handle hit and stand
+                        player_response = self.asking_player("Type 'h' to hit or 's' to stand for hand 1: ",['h','s'])
                         if player_response == 'h':
                             deck.draw_single_card(hand_1=True)
-                        # Standing
                         elif player_response == 's':
                             __p1_hand_actions_done__ = True
 
-                        while True:
-                               try:
-                                   player_response = str(input("Type 'h' to hit or 's' to stand for hand 2: "))
-                                   if player_response not in (['h','s', 'dd']):
-                                      raise ValueError
-                                   break
-                               except ValueError:
-                                      print(player_response + " is an invalid input.")
-                        # Hitting
+                        player_response = self.asking_player("Type 'h' to hit or 's' to stand for hand 2: ",['h','s'])
                         if player_response == 'h':
                             deck.draw_single_card(hand_1=False)
-                        # Standing
                         elif player_response == 's':
                             __p1_hand_2_actions_done__ = True
-            # same as state 1 bt for split hands                
+
+            # same as state 1 but for split hands                
             elif state is 4:
                 dealer_score = logic.check_score(dealer=True)
                 player_score_1 = __p1_score__
@@ -451,14 +394,9 @@ class Logic:
                         pass
                     else:
                         print(f"\nIt was a push. Both the player hand 2 and dealer had a score of: {dealer_score}.")
-
-                    game_number += 1
-                    __splits_done__ = 0
-                    deck.show_hand(dealer=True, player=True)
-                    deck.reset_hands()
-                    deck.check_graveyard()
-                    game_round = False
+                    game_number = self.end_game(deck, logic, game_number)
                     return game_number
+
                 elif dealer_score < 17:
                     deck.draw_card(dealer=True)
                     dealer_score = logic.check_score(dealer=True)
@@ -477,13 +415,9 @@ class Logic:
                         else:
                             print(f"\nThe dealer won with a score of: {dealer_score}. "
                                   f"\nThe player hand 2 lost with a score of: {player_score_2}.")
-                        game_number += 1
-                        __splits_done__ = 0
-                        deck.show_hand(dealer=True, player=True)
-                        deck.reset_hands()
-                        deck.check_graveyard()
-                        game_round = False
+                        game_number = self.end_game(deck, logic, game_number)
                         return game_number
+
                 elif dealer_score > 21:
                     if one_hand_busted == False:
                         print(f"\nThe dealer busted with a score of: {dealer_score}."
@@ -495,13 +429,30 @@ class Logic:
                         else:
                             print(f"\nThe dealer busted with a score of: {dealer_score}."
                                  f"\nThe player hand 2 won with a score of: {player_score_2}")
-                    game_number += 1
-                    __splits_done__ = 0
-                    deck.show_hand(dealer=True, player=True)
-                    deck.reset_hands()
-                    deck.check_graveyard()
-                    game_round = False
+                    game_number = self.end_game(deck, logic, game_number)
                     return game_number
+
+    # Helper method for ending game
+    def end_game(self, deck, logic, game_number=0):
+        game_number += 1
+        __splits_done__ = 0
+        deck.show_hand(dealer=True, player=True)
+        deck.reset_hands()
+        deck.check_graveyard()
+        game_round = False
+        return game_number
+
+    # Helper method for getting player input
+    def asking_player(self, action="", valid_answers=[]):
+        while True:
+               try:
+                   player_response = str(input(action))
+                   if player_response not in (valid_answers):
+                      raise ValueError
+                   break
+               except ValueError:
+                      print(player_response + " is an invalid input.")
+        return player_response
 
 
                 
