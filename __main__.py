@@ -24,6 +24,9 @@ print(f"The Graveyard consists of {bj_deck.graveyard}")
 while True:
    print(f"\nGame number: {game_number}")
    print(f"\nPlayer has {credits} credits.")
+   if credits <= 0:
+       print(f"\nOut of credits. Game over.")
+       break
    while True:
        try:
            play_again = str(input("type 'y' to continue or 'n' to end the game: "))
