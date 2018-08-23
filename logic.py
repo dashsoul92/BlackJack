@@ -165,7 +165,7 @@ class Logic:
                         state = 2 # assume all bets can be handled in 2
                         continue
                     else:
-                        print(f"\nDealer did not have blackjack. \n Player lost {side_bet}")
+                        print(f"\nDealer did not have blackjack. \n Player lost {side_bet} from side bet")
                 
                 player_score = logic.check_score(player=True)
                 if player_score == 21:
@@ -225,6 +225,7 @@ class Logic:
                     player_response = self.asking_player("Type 'h' to hit or 's' to stand: ",['h','s'])    
                     if player_response == 'h':
                         deck.draw_card(player=True)
+                        deck.show_hand(dealer=True, player=True)
                     elif player_response == 's':
                         state = 2
 
@@ -247,6 +248,8 @@ class Logic:
                         __payout__ = bet*(3/2) + bet
                         credits = credits + __payout__
                         print(f"\n Player won {__payout__}")
+                        game_number = self.end_game(deck, logic, game_number)
+                        return game_number, credits
                     elif dealer_score > player_score:
                         print(f"\nThe dealer won with a score of: {dealer_score}."
                               f"\nThe player lost with a score of: {player_score}.")
@@ -338,6 +341,7 @@ class Logic:
                         if player_response == 'h':
                            # playing_hand = deck.player_one[1]
                             deck.draw_single_card(hand_1=False)
+                            deck.show_hand(dealer=True, player=True)
                         elif player_response == 's':
                             __p1_hand_2_actions_done__ = True
                                
@@ -363,6 +367,7 @@ class Logic:
                         player_response = self.asking_player("Type 'h' to hit or 's' to stand for hand 1: ",['h','s'])                        
                         if player_response == 'h':
                             deck.draw_single_card(hand_1=True)
+                            deck.show_hand(dealer=True, player=True)
                         elif player_response == 's':
                             __p1_hand_actions_done__ = True
                                 
@@ -401,12 +406,14 @@ class Logic:
                         player_response = self.asking_player("Type 'h' to hit or 's' to stand for hand 1: ",['h','s'])
                         if player_response == 'h':
                             deck.draw_single_card(hand_1=True)
+                            deck.show_hand(dealer=True, player=True)
                         elif player_response == 's':
                             __p1_hand_actions_done__ = True
 
                         player_response = self.asking_player("Type 'h' to hit or 's' to stand for hand 2: ",['h','s'])
                         if player_response == 'h':
                             deck.draw_single_card(hand_1=False)
+                            deck.show_hand(dealer=True, player=True)
                         elif player_response == 's':
                             __p1_hand_2_actions_done__ = True
 
