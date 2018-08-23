@@ -15,13 +15,15 @@ game_logic = logic.create_logic(bj_deck)
 
 # Beginning the game
 game_number = 1
+credits = 100
 
-print("First game will start.")
-game_number = game_logic.play_round(deck=bj_deck, logic=game_logic, game_number=game_number)
+print("First game will start. You have {credits} credits")
+game_number, credits = game_logic.play_round(deck=bj_deck, logic=game_logic, game_number=game_number, credits=credits)
 print(f"The Graveyard consists of {bj_deck.graveyard}")
 
 while True:
    print(f"\nGame number: {game_number}")
+   print(f"\nPlayer has {credits} credits.")
    while True:
        try:
            play_again = str(input("type 'y' to continue or 'n' to end the game: "))
@@ -31,7 +33,7 @@ while True:
        except ValueError:
            print(play_again + " is an invalid input.")
    if play_again == 'y':
-       game_number = game_logic.play_round(deck=bj_deck, logic=game_logic, game_number=game_number)
+       game_number, credits = game_logic.play_round(deck=bj_deck, logic=game_logic, game_number=game_number, credits=credits)
        print(f"The Graveyard consists of {bj_deck.graveyard}")
        print(f"The length of the dealer's deck is: {len(bj_deck.dealer_hand)}\n"
              f"The length of the player's deck is: {len(bj_deck.player_one_hand)}")

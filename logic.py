@@ -111,9 +111,11 @@ class Logic:
             return
 
     # Method used to handle logic for each round of the game
-    def play_round(self, deck, logic, game_number=0):
+    def play_round(self, deck, logic, game_number=0, credits=0):
         game_round = True
         state = 0
+        bet = 0
+        __payout__ = 0
 
         while game_round:
             # Game setup
@@ -124,32 +126,45 @@ class Logic:
                 deck.show_hand(dealer=False, player=True)
                 logic.check_score(player=True, print_score=True)
 
+                # Set up bet
+                bet = 10
+                if credits < bet:
+                    bet = credits
+                else:
+                    credits = credits - bet
+                print(f"\nPlayer's bet on hand is {bet}")
+
                 # Handle Surrender
                 player_response = self.asking_player("Type 'y' to Surrender or 'n' to continue: ", ['y','n'])
                 if player_response == 'y':
-                    # add bet
-                    print(f"\nYou Surrendered.")
+                    __payout__ = bet/2
+                    credits = credits + __payout__
+                    print(f"\nYou Surrendered. \n Payout is {__payout__}")
                     game_number = self.end_game(deck, logic, game_number)
-                    return game_number
+                    return game_number, credits
                 elif player_response == 'n':
                     pass
 
                 # Handle Insurance bet
                 __card_1__ = deck.dealer_hand[0]
-                if __card_1__[1] == 10 or __card_1__[1] == 1:
+                if __card_1__[1] == 10 or __card_1__[1] == 1 and credits >= bet/2:
+                    side_bet = 0
                     player_response = self.asking_player("Type 'y' to make Insurance bet or 'n' to continue: ", ['n','y'])
                     if player_response == 'y':
-                       pass # add bet
+                        side_bet = bet/2
+                        credits = credits - bet/2
+                        print(f"\nPlayer's side bet is {side_bet}.")
                     elif player_response == 'n':
                         pass
                     __dealer_score__ = logic.check_score(dealer=True)
                     if __dealer_score__ == 21:
-                        # pay insurance
+                        __payout__ = side_bet + side_bet*2
+                        credits = credits + __payout__
+                        print(f"\nDealer had blackjack. \n Payout is {__payout__}")
                         state = 2 # assume all bets can be handled in 2
                         continue
                     else:
-                        # lose insurance
-                        pass
+                        print(f"\nDealer did not have blackjack. \n Player lost {side_bet}")
                 
                 player_score = logic.check_score(player=True)
                 if player_score == 21:
@@ -168,7 +183,7 @@ class Logic:
                         print(f"\nThe dealer won with a score of: {dealer_score}."
                              f"\nThe player busted with a score of: {player_score}.")
                         game_number = self.end_game(deck, logic, game_number)
-                        return game_number
+                        return game_number, credits
                     else:
                         state = 2
                         continue
@@ -210,7 +225,7 @@ class Logic:
                     print(f"\nThe dealer won with a score of: {dealer_score}."
                           f"\nThe player busted with a score of: {player_score}.")
                     game_number = self.end_game(deck, logic, game_number)
-                    return game_number
+                    return game_number, credits
             # Dealer logic for hitting and standing
             # If the dealer's hand is 17 or higher then, the dealer will always stand
             # If the dealer's hand is less than 17 then, the dealer must hit
@@ -221,16 +236,16 @@ class Logic:
                         print(f"\nThe dealer won with a score of: {dealer_score}."
                               f"\nThe player lost with a score of: {player_score}.")
                         game_number = self.end_game(deck, logic, game_number)
-                        return game_number
+                        return game_number, credits
                     elif dealer_score < player_score:
                         print(f"\nThe dealer lost with a score of: {dealer_score}."
                               f"\nThe player won with a score of: {player_score}.")
                         game_number = self.end_game(deck, logic, game_number)
-                        return game_number
+                        return game_number, credits
                     else:
                         print(f"\nIt was a push. Both the player and dealer had a score of: {dealer_score}.")
                         game_number = self.end_game(deck, logic, game_number)
-                        return game_number
+                        return game_number, credits
                 elif dealer_score < 17:
                     deck.draw_card(dealer=True)
                     dealer_score = logic.check_score(dealer=True)
@@ -239,17 +254,17 @@ class Logic:
                         if player_score == 21:
                             print(f"It was a push. Both the player and dealer had a score of: {dealer_score}")
                             game_number = self.end_game(deck, logic, game_number)
-                            return game_number
+                            return game_number, credits
                         else:
                             print(f"\nThe dealer won with a score of: {dealer_score}. "
                                   f"\nThe player lost with a score of: {player_score}.")
                             game_number = self.end_game(deck, logic, game_number)
-                            return game_number
+                            return game_number, credits
                 elif dealer_score > 21:
                     print(f"\nThe dealer busted with a score of: {dealer_score}."
                           f"\nThe player won with a score of: {player_score}")
                     game_number = self.end_game(deck, logic, game_number)
-                    return game_number
+                    return game_number, credits
             #same as state 1 but for split hands
             elif state is 3:
                 __has_split__ = True
@@ -395,7 +410,7 @@ class Logic:
                     else:
                         print(f"\nIt was a push. Both the player hand 2 and dealer had a score of: {dealer_score}.")
                     game_number = self.end_game(deck, logic, game_number)
-                    return game_number
+                    return game_number, credits
 
                 elif dealer_score < 17:
                     deck.draw_card(dealer=True)
@@ -416,7 +431,7 @@ class Logic:
                             print(f"\nThe dealer won with a score of: {dealer_score}. "
                                   f"\nThe player hand 2 lost with a score of: {player_score_2}.")
                         game_number = self.end_game(deck, logic, game_number)
-                        return game_number
+                        return game_number, credits
 
                 elif dealer_score > 21:
                     if one_hand_busted == False:
@@ -430,7 +445,7 @@ class Logic:
                             print(f"\nThe dealer busted with a score of: {dealer_score}."
                                  f"\nThe player hand 2 won with a score of: {player_score_2}")
                     game_number = self.end_game(deck, logic, game_number)
-                    return game_number
+                    return game_number, credits
 
     # Helper method for ending game
     def end_game(self, deck, logic, game_number=0):
